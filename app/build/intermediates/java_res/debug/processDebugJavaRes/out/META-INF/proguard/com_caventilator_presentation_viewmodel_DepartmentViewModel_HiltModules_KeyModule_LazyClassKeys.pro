@@ -1,1 +1,0 @@
--keep,allowobfuscation,allowshrinking class com.caventilator.presentation.viewmodel.DepartmentViewModel

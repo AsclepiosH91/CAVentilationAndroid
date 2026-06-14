@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.caventilator.app-debug-47:/xml_file_paths.xml.flat",
+        "source": "com.caventilator.app-main-49:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.caventilator.app-debug-47:/mipmap_ic_launcher_round.png.flat",
+        "source": "com.caventilator.app-main-49:/mipmap/ic_launcher_round.png"
+    },
+    {
+        "merged": "com.caventilator.app-debug-47:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.caventilator.app-main-49:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.caventilator.app-debug-47:/mipmap_ic_launcher.png.flat",
+        "source": "com.caventilator.app-main-49:/mipmap/ic_launcher.png"
+    }
+]

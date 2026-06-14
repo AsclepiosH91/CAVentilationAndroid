@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CAVentilationAndroid</string>
+    <string name="departements">Départements</string>
+    <string name="new_departement">Nouveau département</string>
+</resources>

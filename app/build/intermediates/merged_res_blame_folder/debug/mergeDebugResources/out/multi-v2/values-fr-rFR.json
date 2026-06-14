@@ -1,0 +1,48 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\Nicolas\\.gradle\\daemon\\9.5.0\\com.caventilator.app-mergeDebugResources-45:\\values-fr-rFR\\values-fr-rFR.xml",
+            "map": [
+                {
+                    "source": "D:\\Users\\Nicolas\\source\\repos\\CAVentilator\\app\\src\\main\\res\\values-fr-rFR\\strings.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "57,110,165",
+                        "endColumns": "51,53,63",
+                        "endOffsets": "104,159,224"
+                    },
+                    "to": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,107,161",
+                        "endColumns": "51,53,63",
+                        "endOffsets": "102,156,220"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.caventilator.app-mergeDebugResources-45:/values-fr-rFR/values-fr-rFR.xml",
+            "map": [
+                {
+                    "source": "D:\\Users\\Nicolas\\source\\repos\\CAVentilator\\app\\src\\main\\res\\values-fr-rFR\\strings.xml",
+                    "from": {
+                        "startLines": "2,-1,-1",
+                        "startColumns": "4,-1,-1",
+                        "startOffsets": "57,-1,-1",
+                        "endColumns": "57,-1,-1",
+                        "endOffsets": "110,-1,-1"
+                    },
+                    "to": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,113,167",
+                        "endColumns": "57,53,63",
+                        "endOffsets": "108,162,226"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,6 +1,10 @@
 package com.caventilator.domain.usecase
 
-import com.caventilator.domain.model.*
+import com.caventilator.domain.model.Department
+import com.caventilator.domain.model.Product
+import com.caventilator.domain.model.Semester
+import com.caventilator.domain.model.VentilationItem
+import com.caventilator.domain.model.VentilationResult
 import javax.inject.Inject
 
 /**

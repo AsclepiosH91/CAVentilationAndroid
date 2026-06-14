@@ -4,14 +4,18 @@ import android.content.Context
 import android.net.Uri
 import com.caventilator.domain.model.VentilationResult
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.apache.poi.ss.usermodel.*
+import org.apache.poi.ss.usermodel.BorderStyle
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.HorizontalAlignment
+import org.apache.poi.ss.usermodel.IndexedColors
+import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.OutputStream
 import javax.inject.Inject
 
 class ExportExcelUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
 
     /**

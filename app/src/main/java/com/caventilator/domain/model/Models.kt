@@ -1,5 +1,8 @@
 package com.caventilator.domain.model
 
+import androidx.annotation.StringRes
+import com.caventilator.R
+
 /**
  * Représente un produit du catalogue (ex: titre de transport)
  */
@@ -22,9 +25,9 @@ data class Department(
 /**
  * Semestre sélectionné pour la ventilation
  */
-enum class Semester(val label: String) {
-    S1("Semestre 1"),
-    S2("Semestre 2")
+enum class Semester(@param:StringRes val labelRes: Int) {
+    S1(R.string.semester_1),
+    S2(R.string.semester_2)
 }
 
 /**

@@ -3,6 +3,7 @@ package com.caventilator.presentation.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.caventilator.R
 import com.caventilator.data.repository.DepartmentRepository
 import com.caventilator.data.repository.ProductRepository
 import com.caventilator.domain.model.Department
@@ -11,6 +12,7 @@ import com.caventilator.domain.model.Semester
 import com.caventilator.domain.model.VentilationResult
 import com.caventilator.domain.usecase.ExportExcelUseCase
 import com.caventilator.domain.usecase.VentilateCAUseCase
+import com.caventilator.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +33,8 @@ data class VentilationUiState(
     val result: VentilationResult? = null,
     val isCalculating: Boolean = false,
     val isExporting: Boolean = false,
-    val exportSuccess: String? = null,   // message affiché en snackbar
-    val errorMessage: String? = null
+    val exportSuccess: UiText? = null,
+    val errorMessage: UiText? = null
 )
 
 @HiltViewModel
@@ -53,7 +55,7 @@ class VentilationViewModel @Inject constructor(
                 departmentRepository.observeDepartments(),
                 productRepository.observeProducts()
             ) { depts, prods -> depts to prods }
-                .catch { e -> _uiState.update { it.copy(errorMessage = e.message) } }
+                .catch { e -> _uiState.update { it.copy(errorMessage = e.message?.let { msg -> UiText.DynamicString(msg) }) } }
                 .collect { (depts, prods) ->
                     _uiState.update { state ->
                         // Si le département sélectionné n'existe plus, on le désélectionne
@@ -80,11 +82,11 @@ class VentilationViewModel @Inject constructor(
     fun runVentilation() {
         val state = _uiState.value
         val dept = state.selectedDepartment ?: run {
-            _uiState.update { it.copy(errorMessage = "Veuillez sélectionner un département") }
+            _uiState.update { it.copy(errorMessage = UiText.StringResource(R.string.error_select_department)) }
             return
         }
         if (state.products.isEmpty()) {
-            _uiState.update { it.copy(errorMessage = "Aucun produit disponible dans le catalogue") }
+            _uiState.update { it.copy(errorMessage = UiText.StringResource(R.string.error_no_products)) }
             return
         }
 
@@ -105,11 +107,11 @@ class VentilationViewModel @Inject constructor(
                 withContext(Dispatchers.IO) { exportExcel.exportToUri(uri, result) }
             }.onSuccess {
                 _uiState.update {
-                    it.copy(isExporting = false, exportSuccess = "Fichier Excel exporté avec succès")
+                    it.copy(isExporting = false, exportSuccess = UiText.StringResource(R.string.success_excel_export))
                 }
             }.onFailure { e ->
                 _uiState.update {
-                    it.copy(isExporting = false, errorMessage = "Export échoué : ${e.message}")
+                    it.copy(isExporting = false, errorMessage = UiText.StringResource(R.string.error_export_failed, e.message ?: ""))
                 }
             }
         }

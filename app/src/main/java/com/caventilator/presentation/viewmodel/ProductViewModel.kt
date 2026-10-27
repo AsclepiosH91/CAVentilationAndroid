@@ -2,8 +2,10 @@ package com.caventilator.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.caventilator.R
 import com.caventilator.data.repository.ProductRepository
 import com.caventilator.domain.model.Product
+import com.caventilator.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,14 +18,14 @@ import javax.inject.Inject
 data class ProductUiState(
     val products: List<Product> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     // Dialog state
     val showDialog: Boolean = false,
     val editingProduct: Product? = null,
     val dialogName: String = "",
     val dialogPrice: String = "",
-    val dialogNameError: String? = null,
-    val dialogPriceError: String? = null
+    val dialogNameError: UiText? = null,
+    val dialogPriceError: UiText? = null
 )
 
 @HiltViewModel
@@ -37,7 +39,7 @@ class ProductViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.observeProducts()
-                .catch { e -> _uiState.update { it.copy(errorMessage = e.message, isLoading = false) } }
+                .catch { e -> _uiState.update { it.copy(errorMessage = e.message?.let { msg -> UiText.DynamicString(msg) }, isLoading = false) } }
                 .collect { products ->
                     _uiState.update { it.copy(products = products, isLoading = false) }
                 }
@@ -88,12 +90,12 @@ class ProductViewModel @Inject constructor(
 
     fun saveProduct() {
         val state = _uiState.value
-        val nameError = if (state.dialogName.isBlank()) "Le nom est obligatoire" else null
+        val nameError = if (state.dialogName.isBlank()) UiText.StringResource(R.string.error_name_required) else null
         val price = state.dialogPrice.replace(",", ".").toDoubleOrNull()
         val priceError = when {
-            state.dialogPrice.isBlank() -> "Le prix est obligatoire"
-            price == null -> "Prix invalide"
-            price <= 0.0 -> "Le prix doit être positif"
+            state.dialogPrice.isBlank() -> UiText.StringResource(R.string.error_price_required)
+            price == null -> UiText.StringResource(R.string.error_price_invalid)
+            price <= 0.0 -> UiText.StringResource(R.string.error_price_positive)
             else -> null
         }
 

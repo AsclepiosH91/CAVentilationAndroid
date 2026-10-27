@@ -1,14 +1,17 @@
 package com.caventilator.presentation
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -20,7 +23,7 @@ import com.caventilator.presentation.ui.theme.CAVentilatorTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +53,8 @@ class MainActivity : ComponentActivity() {
                                         restoreState = true
                                     }
                                 },
-                                icon = { androidx.compose.material3.Icon(dest.icon, contentDescription = dest.label) },
-                                label = { androidx.compose.material3.Text(dest.label) }
+                                icon = { Icon(dest.icon, contentDescription = stringResource(dest.labelRes)) },
+                                label = { Text(stringResource(dest.labelRes)) }
                             )
                         }
                     }

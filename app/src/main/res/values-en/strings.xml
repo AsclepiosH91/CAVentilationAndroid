@@ -1,6 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App & Navigation -->
     <string name="app_name">CAVentilationAndroid</string>
-    <string name="departements">Departments</string>
-    <string name="new_departement">New department</string>
+    <string name="nav_products">Products</string>
+    <string name="nav_departments">Departments</string>
+    <string name="nav_ventilation">Allocation</string>
+
+    <!-- Screen Titles -->
+    <string name="title_products">Product Catalog</string>
+    <string name="title_departments">Departments</string>
+    <string name="title_ventilation">Turnover Allocation</string>
+
+    <!-- Actions & FABs -->
+    <string name="action_new_product">New product</string>
+    <string name="action_new_department">New department</string>
+    <string name="action_save">Save</string>
+    <string name="action_create">Create</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Accessibility / Content Descriptions -->
+    <string name="cd_edit">Edit</string>
+    <string name="cd_delete">Delete</string>
+    <string name="cd_export_excel">Export Excel</string>
+    <string name="cd_language_switch">Switch language</string>
+
+    <!-- Empty States & Warnings -->
+    <string name="empty_products">No products.\nTap + to create one.</string>
+    <string name="empty_departments">No departments.\nTap + to create one.</string>
+    <string name="empty_ventilation_result">No product could be allocated for this target turnover.</string>
+    <string name="warning_no_products">⚠ No products in catalog</string>
+
+    <!-- Buttons -->
+    <string name="btn_calculate_ventilation">Calculate allocation</string>
+
+    <!-- Dialog Titles & Messages -->
+    <string name="dialog_delete_product_title">Delete this product?</string>
+    <string name="dialog_delete_product_msg">“%1$s” will be permanently deleted.</string>
+    <string name="dialog_delete_dept_title">Delete this department?</string>
+    <string name="dialog_delete_dept_msg">“%1$s” will be permanently deleted.</string>
+    <string name="dialog_title_new_product">New product</string>
+    <string name="dialog_title_edit_product">Edit product</string>
+    <string name="dialog_title_new_dept">New department</string>
+    <string name="dialog_title_edit_dept">Edit department</string>
+
+    <!-- Field Labels -->
+    <string name="label_product_name">Product name</string>
+    <string name="label_unit_price">Unit price (€)</string>
+    <string name="label_department_name">Department name</string>
+    <string name="label_target_s1">Target turnover Semester 1 (€)</string>
+    <string name="label_target_s2">Target turnover Semester 2 (€)</string>
+    <string name="label_department">Department</string>
+    <string name="label_semester">Semester</string>
+    <string name="semester_1">Semester 1</string>
+    <string name="semester_2">Semester 2</string>
+    <string name="select_department_placeholder">Select a department</string>
+    <string name="no_department_available">No department available</string>
+
+    <!-- Card & Summary Formats -->
+    <string name="chip_s1_format">S1: %1$s</string>
+    <string name="chip_s2_format">S2: %1$s</string>
+    <string name="unit_price_prefix_format">UP: %1$s</string>
+    <string name="ventilation_result_title">Allocation Result</string>
+    <string name="ventilation_subtitle_format">%1$s – %2$s</string>
+    <string name="label_target_ca">Target Turnover</string>
+    <string name="label_total_ventilated">Allocated Turnover</string>
+    <string name="label_residual">Residual</string>
+    <string name="absorption_rate_format">Absorption rate: %1$.1f %%</string>
+    <string name="header_product_detail">Detail by product</string>
+
+    <!-- Language Selector -->
+    <string name="language_french">Français</string>
+    <string name="language_english">English</string>
+    <string name="language_select_title">Choose language</string>
+
+    <!-- Validation & Error Messages -->
+    <string name="error_name_required">Name is required</string>
+    <string name="error_price_required">Price is required</string>
+    <string name="error_price_invalid">Invalid price</string>
+    <string name="error_price_positive">Price must be positive</string>
+    <string name="error_amount_invalid">Invalid amount</string>
+    <string name="error_amount_positive">Amount must be positive</string>
+    <string name="error_select_department">Please select a department</string>
+    <string name="error_no_products">No products available in catalog</string>
+    <string name="success_excel_export">Excel file exported successfully</string>
+    <string name="error_export_failed">Export failed: %1$s</string>
+
+    <!-- Excel Export -->
+    <string name="excel_sheet_title">Turnover Allocation</string>
+    <string name="excel_title_format">CA Ventilator – %1$s / %2$s</string>
+    <string name="excel_header_product">Product</string>
+    <string name="excel_header_unit_price">Unit price</string>
+    <string name="excel_header_quantity">Quantity</string>
+    <string name="excel_header_amount">Allocated amount</string>
+    <string name="excel_total_ventilated">TOTAL ALLOCATED</string>
+    <string name="excel_residual">RESIDUAL (unallocated)</string>
 </resources>

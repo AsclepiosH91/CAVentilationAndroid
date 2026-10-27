@@ -2,8 +2,10 @@ package com.caventilator.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.caventilator.R
 import com.caventilator.data.repository.DepartmentRepository
 import com.caventilator.domain.model.Department
+import com.caventilator.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,15 +18,15 @@ import javax.inject.Inject
 data class DepartmentUiState(
     val departments: List<Department> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null,
+    val errorMessage: UiText? = null,
     val showDialog: Boolean = false,
     val editingDepartment: Department? = null,
     val dialogName: String = "",
     val dialogTargetS1: String = "",
     val dialogTargetS2: String = "",
-    val dialogNameError: String? = null,
-    val dialogS1Error: String? = null,
-    val dialogS2Error: String? = null
+    val dialogNameError: UiText? = null,
+    val dialogS1Error: UiText? = null,
+    val dialogS2Error: UiText? = null
 )
 
 @HiltViewModel
@@ -38,7 +40,7 @@ class DepartmentViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.observeDepartments()
-                .catch { e -> _uiState.update { it.copy(errorMessage = e.message, isLoading = false) } }
+                .catch { e -> _uiState.update { it.copy(errorMessage = e.message?.let { msg -> UiText.DynamicString(msg) }, isLoading = false) } }
                 .collect { departments ->
                     _uiState.update { it.copy(departments = departments, isLoading = false) }
                 }
@@ -83,20 +85,20 @@ class DepartmentViewModel @Inject constructor(
 
     fun saveDepartment() {
         val state = _uiState.value
-        val nameError = if (state.dialogName.isBlank()) "Le nom est obligatoire" else null
+        val nameError = if (state.dialogName.isBlank()) UiText.StringResource(R.string.error_name_required) else null
 
-        fun parseAmount(raw: String, label: String): Pair<Double?, String?> {
+        fun parseAmount(raw: String): Pair<Double?, UiText?> {
             if (raw.isBlank()) return 0.0 to null
             val v = raw.replace(",", ".").toDoubleOrNull()
             return when {
-                v == null -> null to "Montant invalide"
-                v < 0 -> null to "Le montant doit être positif"
+                v == null -> null to UiText.StringResource(R.string.error_amount_invalid)
+                v < 0 -> null to UiText.StringResource(R.string.error_amount_positive)
                 else -> v to null
             }
         }
 
-        val (s1, s1Err) = parseAmount(state.dialogTargetS1, "S1")
-        val (s2, s2Err) = parseAmount(state.dialogTargetS2, "S2")
+        val (s1, s1Err) = parseAmount(state.dialogTargetS1)
+        val (s2, s2Err) = parseAmount(state.dialogTargetS2)
 
         if (nameError != null || s1Err != null || s2Err != null) {
             _uiState.update { it.copy(dialogNameError = nameError, dialogS1Error = s1Err, dialogS2Error = s2Err) }

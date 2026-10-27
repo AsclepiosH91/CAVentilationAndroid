@@ -57,15 +57,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.caventilator.R
 import com.caventilator.domain.model.Department
 import com.caventilator.domain.model.Semester
 import com.caventilator.domain.model.VentilationItem
 import com.caventilator.domain.model.VentilationResult
 import com.caventilator.presentation.ui.components.EmptyState
+import com.caventilator.presentation.ui.components.LanguageSwitchIconButton
 import com.caventilator.presentation.ui.components.LabeledValue
 import com.caventilator.presentation.ui.components.SectionHeader
 import com.caventilator.presentation.ui.components.formatCurrency
@@ -81,6 +85,7 @@ fun VentilationScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     // Lance la boîte de dialogue SAF pour choisir l'emplacement du .xlsx
     val exportLauncher = rememberLauncherForActivityResult(
@@ -90,14 +95,14 @@ fun VentilationScreen(
     }
 
     LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let {
-            snackbarHostState.showSnackbar(it, duration = SnackbarDuration.Long)
+        state.errorMessage?.let { error ->
+            snackbarHostState.showSnackbar(error.asString(context), duration = SnackbarDuration.Long)
             viewModel.clearMessages()
         }
     }
     LaunchedEffect(state.exportSuccess) {
-        state.exportSuccess?.let {
-            snackbarHostState.showSnackbar(it)
+        state.exportSuccess?.let { success ->
+            snackbarHostState.showSnackbar(success.asString(context))
             viewModel.clearMessages()
         }
     }
@@ -105,7 +110,7 @@ fun VentilationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ventilation CA") },
+                title = { Text(stringResource(R.string.title_ventilation)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
@@ -127,12 +132,13 @@ fun VentilationScreen(
                             } else {
                                 Icon(
                                     Icons.Default.FileDownload,
-                                    contentDescription = "Exporter Excel",
+                                    contentDescription = stringResource(R.string.cd_export_excel),
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
                     }
+                    LanguageSwitchIconButton()
                 }
             )
         },
@@ -182,13 +188,13 @@ fun VentilationScreen(
                         Icon(Icons.Default.BarChart, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
                     }
-                    Text("Calculer la ventilation")
+                    Text(stringResource(R.string.btn_calculate_ventilation))
                 }
 
                 if (state.products.isEmpty()) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "⚠ Aucun produit dans le catalogue",
+                        stringResource(R.string.warning_no_products),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -204,14 +210,14 @@ fun VentilationScreen(
                 }
 
                 if (result.items.isNotEmpty()) {
-                    item { SectionHeader("Détail par produit") }
+                    item { SectionHeader(stringResource(R.string.header_product_detail)) }
 
                     items(result.items, key = { it.product.id }) { item ->
                         VentilationItemCard(item)
                     }
                 } else {
                     item {
-                        EmptyState("Aucun produit n'a pu être alloué pour ce CA cible.")
+                        EmptyState(stringResource(R.string.empty_ventilation_result))
                     }
                 }
             }
@@ -234,8 +240,11 @@ private fun DepartmentSelector(
 
     Card(shape = MaterialTheme.shapes.medium) {
         Column(Modifier.padding(16.dp)) {
-            Text("Département", style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary)
+            Text(
+                stringResource(R.string.label_department),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(8.dp))
 
             ExposedDropdownMenuBox(
@@ -243,7 +252,7 @@ private fun DepartmentSelector(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = selected?.name ?: "Sélectionner un département",
+                    value = selected?.name ?: stringResource(R.string.select_department_placeholder),
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
@@ -254,7 +263,7 @@ private fun DepartmentSelector(
                 ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     if (departments.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text("Aucun département disponible") },
+                            text = { Text(stringResource(R.string.no_department_available)) },
                             onClick = { expanded = false },
                             enabled = false
                         )
@@ -275,12 +284,12 @@ private fun DepartmentSelector(
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     AssistChip(
                         onClick = {},
-                        label = { Text("S1 : ${dept.targetS1.formatCurrency()}") },
+                        label = { Text(stringResource(R.string.chip_s1_format, dept.targetS1.formatCurrency())) },
                         leadingIcon = { Icon(Icons.Default.Euro, null, Modifier.size(16.dp)) }
                     )
                     AssistChip(
                         onClick = {},
-                        label = { Text("S2 : ${dept.targetS2.formatCurrency()}") },
+                        label = { Text(stringResource(R.string.chip_s2_format, dept.targetS2.formatCurrency())) },
                         leadingIcon = { Icon(Icons.Default.Euro, null, Modifier.size(16.dp)) }
                     )
                 }
@@ -298,8 +307,11 @@ private fun SemesterSelector(
 ) {
     Card(shape = MaterialTheme.shapes.medium) {
         Column(Modifier.padding(16.dp)) {
-            Text("Semestre", style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary)
+            Text(
+                stringResource(R.string.label_semester),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(Modifier.height(8.dp))
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
                 Semester.entries.forEachIndexed { index, semester ->
@@ -308,7 +320,7 @@ private fun SemesterSelector(
                         onClick = { onSelect(semester) },
                         shape = SegmentedButtonDefaults.itemShape(index, Semester.entries.size)
                     ) {
-                        Text(semester.label)
+                        Text(stringResource(semester.labelRes))
                     }
                 }
             }
@@ -330,38 +342,48 @@ private fun VentilationSummaryCard(result: VentilationResult) {
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Column(Modifier.fillMaxWidth().padding(20.dp)) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
             Text(
-                text = "Résultat de la ventilation",
+                text = stringResource(R.string.ventilation_result_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${result.department.name} – ${result.semester.label}",
+                text = stringResource(
+                    R.string.ventilation_subtitle_format,
+                    result.department.name,
+                    stringResource(result.semester.labelRes)
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
             Spacer(Modifier.height(16.dp))
 
-            LabeledValue("CA Cible", result.targetCA.formatCurrency())
+            LabeledValue(stringResource(R.string.label_target_ca), result.targetCA.formatCurrency())
             Spacer(Modifier.height(6.dp))
-            LabeledValue("CA Ventilé", result.totalVentilated.formatCurrency())
+            LabeledValue(stringResource(R.string.label_total_ventilated), result.totalVentilated.formatCurrency())
             Spacer(Modifier.height(6.dp))
-            LabeledValue("Résidu", result.residual.formatCurrency())
+            LabeledValue(stringResource(R.string.label_residual), result.residual.formatCurrency())
 
             Spacer(Modifier.height(12.dp))
 
             // Barre de progression de l'absorption
             Text(
-                text = "Taux d'absorption : ${"%.1f".format(absorptionPct)} %",
+                text = stringResource(R.string.absorption_rate_format, absorptionPct),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Spacer(Modifier.height(4.dp))
             LinearProgressIndicator(
                 progress = { (absorptionPct / 100).toFloat() },
-                modifier = Modifier.fillMaxWidth().height(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 color = when {
                     absorptionPct >= 95 -> MaterialTheme.colorScheme.tertiary
@@ -383,13 +405,15 @@ private fun VentilationItemCard(item: VentilationItem) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {
                 Text(item.product.name, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    text = "PU : ${item.product.unitPrice.formatCurrency()}",
+                    text = stringResource(R.string.unit_price_prefix_format, item.product.unitPrice.formatCurrency()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

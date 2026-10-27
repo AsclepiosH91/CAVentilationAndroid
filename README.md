@@ -9,6 +9,7 @@ Application Android moderne permettant de **ventiler automatiquement un chiffre 
 - [Aperçu fonctionnel](#aperçu-fonctionnel)
 - [Architecture](#architecture)
 - [Stack technique](#stack-technique)
+- [Support multilingue](#support-multilingue)
 - [Structure du projet](#structure-du-projet)
 - [Algorithme de ventilation](#algorithme-de-ventilation)
 - [Persistance des données](#persistance-des-données)
@@ -30,6 +31,8 @@ L'application couvre trois domaines :
 | **Produits** | Créer, modifier, supprimer des produits du catalogue (nom + prix unitaire) |
 | **Départements** | Définir des départements avec un CA cible par semestre (S1 / S2) |
 | **Ventilation** | Sélectionner un département et un semestre, lancer le calcul, visualiser et exporter les résultats |
+
+L'application intègre également un **support multilingue (Français / Anglais)** avec un bouton de changement de langue dynamique dans la barre supérieure.
 
 ---
 
@@ -68,18 +71,42 @@ Le flux de données est **unidirectionnel** :
 
 | Catégorie | Bibliothèque / outil | Version |
 |---|---|---|
-| Langage | Kotlin | 2.0.21 |
-| UI | Jetpack Compose BOM | 2024.10.00 |
+| Langage | Kotlin | 2.3.0 |
+| UI | Jetpack Compose BOM | 2026.05.01 |
 | Design system | Material Design 3 | — |
-| Navigation | Navigation Compose | 2.8.3 |
-| Navigation adaptative | `material3-adaptive-navigation-suite` | 1.3.1 |
-| Architecture | ViewModel + StateFlow | Lifecycle 2.8.6 |
-| Injection de dépendances | Hilt | 2.52 |
-| Base de données locale | Room | 2.6.1 |
-| Traitement asynchrone | Kotlin Coroutines | 1.9.0 |
-| Export Excel | Apache POI OOXML | 5.2.3 |
+| Navigation | Navigation Compose | 2.9.8 |
+| Navigation adaptative | `material3-adaptive-navigation-suite` | 1.4.0 |
+| Multilingue | AppCompat (AppLocales / LocaleManager) | 1.7.0 |
+| Architecture | ViewModel + StateFlow | Lifecycle 2.10.0 |
+| Injection de dépendances | Hilt | 2.59.2 |
+| Base de données locale | Room | 2.8.4 |
+| Traitement asynchrone | Kotlin Coroutines | 1.11.0 |
+| Export Excel | Apache POI OOXML | 5.5.1 |
 | Partage de fichiers | Storage Access Framework (SAF) | — |
-| Build | Gradle (KTS) + Version Catalog | AGP 8.5.2 |
+| Build | Gradle (KTS) + Version Catalog | AGP 9.4.1 |
+
+---
+
+## Support multilingue
+
+L'application prend en charge le **français** et l'**anglais** de manière native. Toutes les chaînes de caractères de l'interface, des messages de validation et des fichiers Excel générés sont externalisées et traduites dans des fichiers de ressources dédiés.
+
+### Fonctionnalités multilingues
+
+- **Sélecteur de langue instantané (`LanguageSwitchIconButton`)** : Présent dans la barre supérieure (`TopAppBar`) de chaque écran, un composant dédié permet de basculer la langue de l'application à tout moment entre le français (`FR`) et l'anglais (`EN`).
+- **Persistance automatique (`AppCompatDelegate`)** : La langue sélectionnée est conservée au redémarrage de l'application grâce au mécanisme officiel Per-App Language Preferences d'Android (API 33+ et compatibilité via `AppCompatDelegate.setApplicationLocales`).
+- **Gestion propre des messages dans les ViewModels (`UiText`)** : Les messages d'erreur et de validation émis par les ViewModels utilisent une classe scellée `UiText` qui résout les ressources au moment de l'affichage Compose selon la locale active.
+- **Exportation Excel traduite** : Les titres, en-têtes et libellés du fichier `.xlsx` généré par `ExportExcelUseCase` s'adaptent dynamiquement à la langue active de l'utilisateur.
+
+### Fichiers de ressources
+
+```
+app/src/main/res/
+├─ values/strings.xml        # Ressources de secours (français par défaut)
+├─ values-fr/strings.xml     # Traductions françaises
+├─ values-en/strings.xml     # Traductions anglaises
+└─ xml/locales_config.xml    # Configuration des locales autorisées (fr, en)
+```
 
 ---
 

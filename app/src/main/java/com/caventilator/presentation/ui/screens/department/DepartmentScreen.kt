@@ -47,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,8 +58,10 @@ import com.caventilator.R
 import com.caventilator.domain.model.Department
 import com.caventilator.presentation.ui.components.EmptyState
 import com.caventilator.presentation.ui.components.FullScreenLoading
+import com.caventilator.presentation.ui.components.LanguageSwitchIconButton
 import com.caventilator.presentation.ui.components.formatCurrency
 import com.caventilator.presentation.ui.theme.CAVentilatorTheme
+import com.caventilator.presentation.ui.util.UiText
 import com.caventilator.presentation.viewmodel.DepartmentUiState
 import com.caventilator.presentation.viewmodel.DepartmentViewModel
 
@@ -96,10 +99,11 @@ private fun DepartmentScreenContent(
     onDismissDialog: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
+        state.errorMessage?.let { error ->
+            snackbarHostState.showSnackbar(error.asString(context))
             onClearError()
         }
     }
@@ -107,28 +111,33 @@ private fun DepartmentScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.departements)) },
+                title = { Text(stringResource(R.string.title_departments)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                actions = {
+                    LanguageSwitchIconButton()
+                }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onOpenAddDialog,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text(stringResource(R.string.new_departement)) }
+                text = { Text(stringResource(R.string.action_new_department)) }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Box(Modifier
-            .fillMaxSize()
-            .padding(padding)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             when {
                 state.isLoading -> FullScreenLoading()
                 state.departments.isEmpty() -> EmptyState(
-                    "Aucun département.\nAppuyez sur + pour en créer un."
+                    stringResource(R.string.empty_departments)
                 )
                 else -> DepartmentList(
                     departments = state.departments,
@@ -213,12 +222,12 @@ private fun DepartmentCard(
                 }
             }
             IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "Modifier")
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit))
             }
             IconButton(onClick = { showDeleteConfirm = true }) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Supprimer",
+                    contentDescription = stringResource(R.string.cd_delete),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -228,16 +237,16 @@ private fun DepartmentCard(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Supprimer ce département ?") },
-            text = { Text("« ${department.name} » sera définitivement supprimé.") },
+            title = { Text(stringResource(R.string.dialog_delete_dept_title)) },
+            text = { Text(stringResource(R.string.dialog_delete_dept_msg, department.name)) },
             confirmButton = {
                 TextButton(
                     onClick = { showDeleteConfirm = false; onDelete() },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) { Text("Supprimer") }
+                ) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) { Text("Annuler") }
+                TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -273,9 +282,9 @@ private fun DepartmentDialog(
     name: String,
     targetS1: String,
     targetS2: String,
-    nameError: String?,
-    s1Error: String?,
-    s2Error: String?,
+    nameError: UiText?,
+    s1Error: UiText?,
+    s2Error: UiText?,
     isEditing: Boolean,
     onNameChange: (String) -> Unit,
     onS1Change: (String) -> Unit,
@@ -285,24 +294,29 @@ private fun DepartmentDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (isEditing) "Modifier le département" else "Nouveau département") },
+        title = {
+            Text(
+                if (isEditing) stringResource(R.string.dialog_title_edit_dept)
+                else stringResource(R.string.dialog_title_new_dept)
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    label = { Text("Nom du département") },
+                    label = { Text(stringResource(R.string.label_department_name)) },
                     isError = nameError != null,
-                    supportingText = nameError?.let { { Text(it) } },
+                    supportingText = nameError?.let { err -> { Text(err.asString()) } },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = targetS1,
                     onValueChange = onS1Change,
-                    label = { Text("CA cible Semestre 1 (€)") },
+                    label = { Text(stringResource(R.string.label_target_s1)) },
                     isError = s1Error != null,
-                    supportingText = s1Error?.let { { Text(it) } },
+                    supportingText = s1Error?.let { err -> { Text(err.asString()) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -310,9 +324,9 @@ private fun DepartmentDialog(
                 OutlinedTextField(
                     value = targetS2,
                     onValueChange = onS2Change,
-                    label = { Text("CA cible Semestre 2 (€)") },
+                    label = { Text(stringResource(R.string.label_target_s2)) },
                     isError = s2Error != null,
-                    supportingText = s2Error?.let { { Text(it) } },
+                    supportingText = s2Error?.let { err -> { Text(err.asString()) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -321,11 +335,14 @@ private fun DepartmentDialog(
         },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text(if (isEditing) "Enregistrer" else "Créer")
+                Text(
+                    if (isEditing) stringResource(R.string.action_save)
+                    else stringResource(R.string.action_create)
+                )
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Annuler") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }

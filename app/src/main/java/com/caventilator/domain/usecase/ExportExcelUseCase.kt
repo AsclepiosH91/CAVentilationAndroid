@@ -2,6 +2,7 @@ package com.caventilator.domain.usecase
 
 import android.content.Context
 import android.net.Uri
+import com.caventilator.R
 import com.caventilator.domain.model.VentilationResult
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.apache.poi.ss.usermodel.BorderStyle
@@ -32,7 +33,7 @@ class ExportExcelUseCase @Inject constructor(
 
     private fun writeWorkbook(stream: OutputStream, result: VentilationResult) {
         val wb: Workbook = XSSFWorkbook()
-        val sheet = wb.createSheet("Ventilation CA")
+        val sheet = wb.createSheet(context.getString(R.string.excel_sheet_title))
 
         // ── Styles ───────────────────────────────────────────────────────────
         val titleStyle = wb.createCellStyle().apply {
@@ -89,7 +90,8 @@ class ExportExcelUseCase @Inject constructor(
         val titleRow = sheet.createRow(rowIdx++)
         titleRow.heightInPoints = 28f
         titleRow.createCell(0).apply {
-            setCellValue("CA Ventilator – ${result.department.name} / ${result.semester.label}")
+            val semesterLabel = context.getString(result.semester.labelRes)
+            setCellValue(context.getString(R.string.excel_title_format, result.department.name, semesterLabel))
             cellStyle = titleStyle
         }
         sheet.addMergedRegion(CellRangeAddress(0, 0, 0, 4))
@@ -103,14 +105,19 @@ class ExportExcelUseCase @Inject constructor(
             r.createCell(1).apply { setCellValue(value); cellStyle = dataStyle }
         }
 
-        infoRow("Département", result.department.name)
-        infoRow("Semestre", result.semester.label)
-        infoRow("CA Cible", "%.2f €".format(result.targetCA))
+        infoRow(context.getString(R.string.label_department), result.department.name)
+        infoRow(context.getString(R.string.label_semester), context.getString(result.semester.labelRes))
+        infoRow(context.getString(R.string.label_target_ca), "%.2f €".format(result.targetCA))
 
         rowIdx++ // ligne vide
 
         // ── En-têtes tableau ──────────────────────────────────────────────────
-        val headers = listOf("Produit", "Prix unitaire", "Quantité", "Montant ventilé")
+        val headers = listOf(
+            context.getString(R.string.excel_header_product),
+            context.getString(R.string.excel_header_unit_price),
+            context.getString(R.string.excel_header_quantity),
+            context.getString(R.string.excel_header_amount)
+        )
         val headerRow = sheet.createRow(rowIdx++)
         headers.forEachIndexed { col, text ->
             headerRow.createCell(col).apply {
@@ -132,13 +139,13 @@ class ExportExcelUseCase @Inject constructor(
 
         // ── Synthèse ──────────────────────────────────────────────────────────
         val totalRow = sheet.createRow(rowIdx++)
-        totalRow.createCell(0).apply { setCellValue("TOTAL VENTILÉ"); cellStyle = totalStyle }
+        totalRow.createCell(0).apply { setCellValue(context.getString(R.string.excel_total_ventilated)); cellStyle = totalStyle }
         totalRow.createCell(1).apply { cellStyle = totalStyle }
         totalRow.createCell(2).apply { cellStyle = totalStyle }
         totalRow.createCell(3).apply { setCellValue(result.totalVentilated); cellStyle = totalStyle }
 
         val residRow = sheet.createRow(rowIdx)
-        residRow.createCell(0).apply { setCellValue("RÉSIDU (non ventilé)"); cellStyle = residualStyle }
+        residRow.createCell(0).apply { setCellValue(context.getString(R.string.excel_residual)); cellStyle = residualStyle }
         residRow.createCell(1).apply { cellStyle = residualStyle }
         residRow.createCell(2).apply { cellStyle = residualStyle }
         residRow.createCell(3).apply { setCellValue(result.residual); cellStyle = residualStyle }

@@ -1,5 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- App & Navigation -->
     <string name="app_name">CAVentilationAndroid</string>
-    <string name="departements">Départements</string>
-    <string name="new_departement">Nouveau département</string>
+    <string name="nav_products">Produits</string>
+    <string name="nav_departments">Départements</string>
+    <string name="nav_ventilation">Ventilation</string>
+
+    <!-- Screen Titles -->
+    <string name="title_products">Catalogue produits</string>
+    <string name="title_departments">Départements</string>
+    <string name="title_ventilation">Ventilation CA</string>
+
+    <!-- Actions & FABs -->
+    <string name="action_new_product">Nouveau produit</string>
+    <string name="action_new_department">Nouveau département</string>
+    <string name="action_save">Enregistrer</string>
+    <string name="action_create">Créer</string>
+    <string name="action_cancel">Annuler</string>
+    <string name="action_delete">Supprimer</string>
+
+    <!-- Accessibility / Content Descriptions -->
+    <string name="cd_edit">Modifier</string>
+    <string name="cd_delete">Supprimer</string>
+    <string name="cd_export_excel">Exporter Excel</string>
+    <string name="cd_language_switch">Changer de langue</string>
+
+    <!-- Empty States & Warnings -->
+    <string name="empty_products">Aucun produit.\nAppuyez sur + pour en créer un.</string>
+    <string name="empty_departments">Aucun département.\nAppuyez sur + pour en créer un.</string>
+    <string name="empty_ventilation_result">Aucun produit n\'a pu être alloué pour ce CA cible.</string>
+    <string name="warning_no_products">⚠ Aucun produit dans le catalogue</string>
+
+    <!-- Buttons -->
+    <string name="btn_calculate_ventilation">Calculer la ventilation</string>
+
+    <!-- Dialog Titles & Messages -->
+    <string name="dialog_delete_product_title">Supprimer ce produit ?</string>
+    <string name="dialog_delete_product_msg">« %1$s » sera définitivement supprimé.</string>
+    <string name="dialog_delete_dept_title">Supprimer ce département ?</string>
+    <string name="dialog_delete_dept_msg">« %1$s » sera définitivement supprimé.</string>
+    <string name="dialog_title_new_product">Nouveau produit</string>
+    <string name="dialog_title_edit_product">Modifier le produit</string>
+    <string name="dialog_title_new_dept">Nouveau département</string>
+    <string name="dialog_title_edit_dept">Modifier le département</string>
+
+    <!-- Field Labels -->
+    <string name="label_product_name">Nom du produit</string>
+    <string name="label_unit_price">Prix unitaire (€)</string>
+    <string name="label_department_name">Nom du département</string>
+    <string name="label_target_s1">CA cible Semestre 1 (€)</string>
+    <string name="label_target_s2">CA cible Semestre 2 (€)</string>
+    <string name="label_department">Département</string>
+    <string name="label_semester">Semestre</string>
+    <string name="semester_1">Semestre 1</string>
+    <string name="semester_2">Semestre 2</string>
+    <string name="select_department_placeholder">Sélectionner un département</string>
+    <string name="no_department_available">Aucun département disponible</string>
+
+    <!-- Card & Summary Formats -->
+    <string name="chip_s1_format">S1 : %1$s</string>
+    <string name="chip_s2_format">S2 : %1$s</string>
+    <string name="unit_price_prefix_format">PU : %1$s</string>
+    <string name="ventilation_result_title">Résultat de la ventilation</string>
+    <string name="ventilation_subtitle_format">%1$s – %2$s</string>
+    <string name="label_target_ca">CA Cible</string>
+    <string name="label_total_ventilated">CA Ventilé</string>
+    <string name="label_residual">Résidu</string>
+    <string name="absorption_rate_format">Taux d\'absorption : %1$.1f %%</string>
+    <string name="header_product_detail">Détail par produit</string>
+
+    <!-- Language Selector -->
+    <string name="language_french">Français</string>
+    <string name="language_english">English</string>
+    <string name="language_select_title">Choisir la langue</string>
+
+    <!-- Validation & Error Messages -->
+    <string name="error_name_required">Le nom est obligatoire</string>
+    <string name="error_price_required">Le prix est obligatoire</string>
+    <string name="error_price_invalid">Prix invalide</string>
+    <string name="error_price_positive">Le prix doit être positif</string>
+    <string name="error_amount_invalid">Montant invalide</string>
+    <string name="error_amount_positive">Le montant doit être positif</string>
+    <string name="error_select_department">Veuillez sélectionner un département</string>
+    <string name="error_no_products">Aucun produit disponible dans le catalogue</string>
+    <string name="success_excel_export">Fichier Excel exporté avec succès</string>
+    <string name="error_export_failed">Export échoué : %1$s</string>
+
+    <!-- Excel Export -->
+    <string name="excel_sheet_title">Ventilation CA</string>
+    <string name="excel_title_format">CA Ventilator – %1$s / %2$s</string>
+    <string name="excel_header_product">Produit</string>
+    <string name="excel_header_unit_price">Prix unitaire</string>
+    <string name="excel_header_quantity">Quantité</string>
+    <string name="excel_header_amount">Montant ventilé</string>
+    <string name="excel_total_ventilated">TOTAL VENTILÉ</string>
+    <string name="excel_residual">RÉSIDU (non ventilé)</string>
 </resources>

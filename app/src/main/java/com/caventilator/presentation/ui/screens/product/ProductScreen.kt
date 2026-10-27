@@ -46,16 +46,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.caventilator.R
 import com.caventilator.domain.model.Product
 import com.caventilator.presentation.ui.components.EmptyState
 import com.caventilator.presentation.ui.components.FullScreenLoading
+import com.caventilator.presentation.ui.components.LanguageSwitchIconButton
 import com.caventilator.presentation.ui.components.formatCurrency
 import com.caventilator.presentation.ui.theme.CAVentilatorTheme
+import com.caventilator.presentation.ui.util.UiText
 import com.caventilator.presentation.viewmodel.ProductUiState
 import com.caventilator.presentation.viewmodel.ProductViewModel
 
@@ -91,11 +96,12 @@ fun ProductScreenContent(
     onDismissDialog: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     // Snackbar pour les erreurs
     LaunchedEffect(state.errorMessage) {
-        state.errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
+        state.errorMessage?.let { error ->
+            snackbarHostState.showSnackbar(error.asString(context))
             onClearError()
         }
     }
@@ -103,26 +109,33 @@ fun ProductScreenContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Catalogue produits") },
+                title = { Text(stringResource(R.string.title_products)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                actions = {
+                    LanguageSwitchIconButton()
+                }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onOpenAddDialog,
                 icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("Nouveau produit") }
+                text = { Text(stringResource(R.string.action_new_product)) }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Box(Modifier.fillMaxSize().padding(padding)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             when {
                 state.isLoading -> FullScreenLoading()
                 state.products.isEmpty() -> EmptyState(
-                    "Aucun produit.\nAppuyez sur + pour en créer un."
+                    stringResource(R.string.empty_products)
                 )
                 else -> ProductList(
                     products = state.products,
@@ -205,12 +218,12 @@ fun ProductCard(
                 )
             }
             IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "Modifier")
+                Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit))
             }
             IconButton(onClick = { showDeleteConfirm = true }) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Supprimer",
+                    contentDescription = stringResource(R.string.cd_delete),
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -220,16 +233,16 @@ fun ProductCard(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Supprimer ce produit ?") },
-            text = { Text("« ${product.name} » sera définitivement supprimé.") },
+            title = { Text(stringResource(R.string.dialog_delete_product_title)) },
+            text = { Text(stringResource(R.string.dialog_delete_product_msg, product.name)) },
             confirmButton = {
                 TextButton(
                     onClick = { showDeleteConfirm = false; onDelete() },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) { Text("Supprimer") }
+                ) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) { Text("Annuler") }
+                TextButton(onClick = { showDeleteConfirm = false }) { Text(stringResource(R.string.action_cancel)) }
             }
         )
     }
@@ -240,8 +253,8 @@ fun ProductCard(
 fun ProductDialog(
     name: String,
     price: String,
-    nameError: String?,
-    priceError: String?,
+    nameError: UiText?,
+    priceError: UiText?,
     isEditing: Boolean,
     onNameChange: (String) -> Unit,
     onPriceChange: (String) -> Unit,
@@ -250,24 +263,29 @@ fun ProductDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (isEditing) "Modifier le produit" else "Nouveau produit") },
+        title = {
+            Text(
+                if (isEditing) stringResource(R.string.dialog_title_edit_product)
+                else stringResource(R.string.dialog_title_new_product)
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChange,
-                    label = { Text("Nom du produit") },
+                    label = { Text(stringResource(R.string.label_product_name)) },
                     isError = nameError != null,
-                    supportingText = nameError?.let { { Text(it) } },
+                    supportingText = nameError?.let { err -> { Text(err.asString()) } },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = price,
                     onValueChange = onPriceChange,
-                    label = { Text("Prix unitaire (€)") },
+                    label = { Text(stringResource(R.string.label_unit_price)) },
                     isError = priceError != null,
-                    supportingText = priceError?.let { { Text(it) } },
+                    supportingText = priceError?.let { err -> { Text(err.asString()) } },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -276,11 +294,14 @@ fun ProductDialog(
         },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text(if (isEditing) "Enregistrer" else "Créer")
+                Text(
+                    if (isEditing) stringResource(R.string.action_save)
+                    else stringResource(R.string.action_create)
+                )
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Annuler") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         }
     )
 }
